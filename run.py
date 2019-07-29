@@ -84,7 +84,10 @@ class Git:
         if message is None:
             message = '{date}'.format(date=date)
 
-        cmd = 'git commit -m "{message}" --author="{author}" --date={date}'.format(
+        cmd = (
+            'git commit -m "{message}" '
+            '--author="{author}" --date={date}'
+        ).format(
             message=message,
             author=author,
             date=date
