@@ -38,13 +38,13 @@ class FakeContribute:
     def create_commit(self, path, times=1, author='bot', date=None):
         for i in range(1, times + 1):
             with open(path, 'w+') as f:
-                f.write("{rand}".format(
+                f.write('{rand}'.format(
                     rand=datetime.datetime.utcnow().microsecond
                 ))
             self.commit(
                 path=path,
                 author=author,
-                message="{i}/{times}".format(i=i, times=times),
+                message='{i}/{times}'.format(i=i, times=times),
                 date=date
             )
 
@@ -74,7 +74,7 @@ class FakeContribute:
 class Git:
     @classmethod
     def add(cls, path):
-        cmd = "git add {path}".format(path=path)
+        cmd = 'git add {path}'.format(path=path)
         return getoutput(cmd)
 
     @classmethod
@@ -82,9 +82,9 @@ class Git:
         if date is None:
             date = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         if message is None:
-            message = "{date}".format(date=date)
+            message = '{date}'.format(date=date)
 
-        cmd = "git commit -m '{message}' --author='{author}' --date={date}".format(
+        cmd = 'git commit -m "{message}" --author="{author}" --date={date}'.format(
             message=message,
             author=author,
             date=date
@@ -93,7 +93,7 @@ class Git:
 
     @classmethod
     def reset(cls, commit):
-        cmd = "git reset {commit}".format(commit=commit)
+        cmd = 'git reset {commit}'.format(commit=commit)
         return getoutput(cmd)
 
     @classmethod
