@@ -52,46 +52,59 @@ class FakeContribute:
         self.reset_to_first()
         self.commit(path=__file__, author=self.author, message=__file__)
         self.rm_rf(self.tmp_dir)
-        self.mkdir(self.tmp_dir)
+        os.mkdir(self.tmp_dir)
 
     def cleanup(self):
         self.rm_rf(self.tmp_dir)
         self.commit(path=self.tmp_dir, author=self.author)
 
     def reset_to_first(self):
-        return self.getoutput("git reset {commit}".format(
-            commit=self.first_commit()
-        ))
-
-    def first_commit(self):
-        return self.getoutput('git rev-list --max-parents=0 HEAD')
+        first_commit = Git.first_commit()
+        return Git.reset(commit=first_commit)
 
     def rm_rf(self, path):
         if os.path.exists(path):
             shutil.rmtree(path)
 
-    def mkdir(self, path):
-        os.mkdir(path)
-
     def commit(self, path, author, message=None, date=None):
+        Git.add(path=path)
+        Git.commit(author, message=message, date=date)
+
+
+class Git:
+    @classmethod
+    def add(cls, path):
+        cmd = "git add {path}".format(path=path)
+        return getoutput(cmd)
+
+    @classmethod
+    def commit(cls, author, date=None, message=None):
         if date is None:
             date = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         if message is None:
             message = "{date}".format(date=date)
 
-        self.getoutput("git add {path}".format(path=path))
-        self.getoutput(
-            "git commit -m '{message}' --author='{author}' --date={date}"
-            .format(
-                message=message,
-                author=author,
-                date=date
-            )
+        cmd = "git commit -m '{message}' --author='{author}' --date={date}".format(
+            message=message,
+            author=author,
+            date=date
         )
+        return getoutput(cmd)
 
-    def getoutput(self, cmd):
-        print(cmd)
-        return commands.getoutput(cmd)
+    @classmethod
+    def reset(cls, commit):
+        cmd = "git reset {commit}".format(commit=commit)
+        return getoutput(cmd)
+
+    @classmethod
+    def first_commit(cls):
+        cmd = 'git rev-list --max-parents=0 HEAD'
+        return getoutput(cmd)
+
+
+def getoutput(cmd):
+    print(cmd)
+    commands.getoutput(cmd)
 
 
 def parse_args():
